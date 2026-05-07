@@ -1,0 +1,5 @@
+{
+  "metric_name": "string",
+  "metric_value": "float",
+  "timestamp": "string"
+}

@@ -1,0 +1,6 @@
+{
+  "customer_id": "int",
+  "churn_probability": "float",
+  "risk_level": "string",
+  "timestamp": "string"
+}

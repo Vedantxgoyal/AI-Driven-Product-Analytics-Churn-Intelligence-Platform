@@ -1,0 +1,7 @@
+{
+  "transformation_id": "string",
+  "input_rows": "int",
+  "output_rows": "int",
+  "duration_ms": "float",
+  "timestamp": "string"
+}

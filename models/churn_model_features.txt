@@ -1,0 +1,10 @@
+Tenure
+WarehouseToHome
+NumberOfDeviceRegistered
+PreferedOrderCat
+SatisfactionScore
+MaritalStatus
+NumberOfAddress
+Complain
+DaySinceLastOrder
+CashbackAmount

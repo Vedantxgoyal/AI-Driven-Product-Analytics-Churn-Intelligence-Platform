@@ -1,0 +1,6 @@
+{
+  "customer_id": "int",
+  "tenure": "float",
+  "satisfaction_score": "int",
+  "churn": "int"
+}
