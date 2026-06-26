@@ -2,7 +2,7 @@
 app/model.py - XGBoost + SHAP model wrapper
 """
 
-import pickle
+import xgboost as xgb
 import pathlib
 import logging
 from typing import Tuple, List, Dict
@@ -69,8 +69,8 @@ class ChurnModel:
 
     def load(self) -> bool:
         try:
-            with open(MODEL_PATH, "rb") as f:
-                self.model = pickle.load(f)
+            self.model = xgb.XGBClassifier()
+            self.model.load_model(str(MODEL_PATH.with_suffix(".json")))
             with open(SHAP_PATH, "rb") as f:
                 self.explainer = pickle.load(f)
             logger.info("✓ XGBoost model + SHAP explainer loaded")

@@ -180,8 +180,7 @@ def save_artifacts(
 ) -> None:
     model.save_model(str(MODEL_PATH.with_suffix(".json")))
 
-    with open(SHAP_PATH, "wb") as f:
-        pickle.dump(explainer, f)
+    model.save_model(str(MODEL_PATH.with_suffix(".json")))
 
     meta = {**cv_metrics, "features": feature_cols}
     META_PATH.write_text(json.dumps(meta, indent=2))
