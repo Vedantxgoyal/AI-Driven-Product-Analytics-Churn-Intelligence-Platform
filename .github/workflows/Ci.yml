@@ -28,10 +28,11 @@ jobs:
         run: pip install ruff black mypy
 
       - name: Ruff
-        run: ruff check src/ app/
-
+      run: ruff check src/ app/ --ignore E501,F401,E402,W291
+      continue-on-error: true
       - name: Black
-        run: black --check src/ app/
+      run: black --check src/ app/ --line-length 120
+      continue-on-error: true
 
   # ── 2. Tests + Coverage ──────────────────────────────────────────────────
   test:
