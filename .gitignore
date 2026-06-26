@@ -13,3 +13,6 @@ models/shap_explainer.pkl
 htmlcov/ 
 .pytest_cache/ 
 *.egg-info/ 
+mlruns/ 
+models/churn_model.pkl 
+models/shap_explainer.pkl 
