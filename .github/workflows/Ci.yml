@@ -31,6 +31,8 @@ jobs:
     name: Tests & Coverage
     runs-on: ubuntu-latest
     needs: lint
+    env:
+      PYTHONPATH: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -42,6 +44,8 @@ jobs:
                       xgboost shap mlflow imbalanced-learn duckdb \
                       python-dotenv pydantic evidently pytest httpx \
                       pytest-asyncio anyio
+      - name: Train model (creates artifacts tests depend on)
+        run: python src/ml/train.py
       - name: Run tests
         run: pytest tests/ --import-mode=importlib -q
 
@@ -49,6 +53,9 @@ jobs:
     name: Model Eval Gate
     runs-on: ubuntu-latest
     needs: test
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+      BASELINE_F1: ${{ env.BASELINE_F1 }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -59,21 +66,7 @@ jobs:
           pip install pandas numpy scikit-learn xgboost shap \
                       mlflow imbalanced-learn
       - name: Train & evaluate
-        run: |
-          python - <<'PYEOF'
-          import sys
-          from src.ml.train import load_data, build_features, train
-          df = load_data()
-          X, y = build_features(df)
-          _, metrics = train(X, y)
-          f1 = metrics["f1"]
-          baseline = float("${{ env.BASELINE_F1 }}")
-          print(f"F1={f1:.4f} baseline={baseline}")
-          if f1 < baseline:
-              print(f"GATE FAILED")
-              sys.exit(1)
-          print("GATE PASSED")
-          PYEOF
+        run: python .github/scripts/eval_gate.py
 
   docker:
     name: Docker Build
