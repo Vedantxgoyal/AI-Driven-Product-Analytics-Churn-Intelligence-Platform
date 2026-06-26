@@ -55,7 +55,6 @@ jobs:
     needs: test
     env:
       PYTHONPATH: ${{ github.workspace }}
-      BASELINE_F1: ${{ env.BASELINE_F1 }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
