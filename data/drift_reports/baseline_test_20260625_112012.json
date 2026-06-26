@@ -1,0 +1,60 @@
+{
+  "report_tag": "baseline_test",
+  "timestamp": "2026-06-25T11:20:12.172433+00:00",
+  "drift_detected": true,
+  "dataset_drifted": true,
+  "drift_share": 0.6667,
+  "drifted_columns": 6,
+  "total_columns": 9,
+  "drift_threshold": 0.3,
+  "missing_value_share": 0.0,
+  "reference_rows": 2335,
+  "current_rows": 1030,
+  "column_drift": {
+    "CashbackAmount": {
+      "drifted": true,
+      "p_value": 0.0,
+      "statistic": 0.0
+    },
+    "Churn": {
+      "drifted": false,
+      "p_value": 0.0,
+      "statistic": 0.0
+    },
+    "Complain": {
+      "drifted": true,
+      "p_value": 0.0,
+      "statistic": 0.0
+    },
+    "DaySinceLastOrder": {
+      "drifted": true,
+      "p_value": 0.0,
+      "statistic": 0.0
+    },
+    "NumberOfAddress": {
+      "drifted": true,
+      "p_value": 0.0,
+      "statistic": 0.0
+    },
+    "NumberOfDeviceRegistered": {
+      "drifted": true,
+      "p_value": 0.0,
+      "statistic": 0.0
+    },
+    "SatisfactionScore": {
+      "drifted": true,
+      "p_value": 0.0,
+      "statistic": 0.0
+    },
+    "Tenure": {
+      "drifted": false,
+      "p_value": 0.0,
+      "statistic": 0.0
+    },
+    "WarehouseToHome": {
+      "drifted": false,
+      "p_value": 0.0,
+      "statistic": 0.0
+    }
+  }
+}

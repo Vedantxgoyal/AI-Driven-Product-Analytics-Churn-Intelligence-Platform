@@ -1,0 +1,33 @@
+{
+  "dataset": "data_ecommerce_customer_churn",
+  "timestamp": "2026-06-25T11:01:34.054173",
+  "passed": false,
+  "total_checks": 17,
+  "passed_checks": 14,
+  "failed_checks": 3,
+  "success_rate_pct": 82.35,
+  "failures": [
+    {
+      "expectation": "no_nulls_Tenure",
+      "observed": 194,
+      "kwargs": {}
+    },
+    {
+      "expectation": "range_NumberOfAddress",
+      "observed": 2,
+      "kwargs": {
+        "min": 1,
+        "max": 20
+      }
+    },
+    {
+      "expectation": "valid_categories_PreferedOrderCat",
+      "observed": [
+        "Mobile"
+      ],
+      "kwargs": {}
+    }
+  ],
+  "row_count": 3941,
+  "churn_rate_pct": 17.1
+}

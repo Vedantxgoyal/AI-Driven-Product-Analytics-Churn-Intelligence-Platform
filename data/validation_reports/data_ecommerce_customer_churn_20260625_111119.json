@@ -1,0 +1,12 @@
+{
+  "dataset": "data_ecommerce_customer_churn",
+  "timestamp": "2026-06-25T11:11:19.686629+00:00",
+  "passed": true,
+  "total_checks": 17,
+  "passed_checks": 17,
+  "failed_checks": 0,
+  "success_rate_pct": 100.0,
+  "failures": [],
+  "row_count": 3941,
+  "churn_rate_pct": 17.1
+}

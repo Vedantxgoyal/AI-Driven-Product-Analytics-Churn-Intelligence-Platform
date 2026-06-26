@@ -1,0 +1,31 @@
+{
+  "f1": 0.7266219771020935,
+  "pr_auc": 0.8281764877769884,
+  "roc_auc": 0.9514201341983661,
+  "precision": 0.6128080751977187,
+  "recall": 0.8946932006633499,
+  "params": {
+    "n_estimators": 400,
+    "max_depth": 5,
+    "learning_rate": 0.05,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "scale_pos_weight": 4.847181008902077,
+    "eval_metric": "aucpr",
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "n_folds": 5,
+  "features": [
+    "Tenure",
+    "WarehouseToHome",
+    "NumberOfDeviceRegistered",
+    "PreferedOrderCat",
+    "SatisfactionScore",
+    "MaritalStatus",
+    "NumberOfAddress",
+    "Complain",
+    "DaySinceLastOrder",
+    "CashbackAmount"
+  ]
+}

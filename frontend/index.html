@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Churn Intelligence Platform</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.1.9/Recharts.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
+  .app{display:flex;flex-direction:column;min-height:100vh}
+  nav{background:#1a1d2e;border-bottom:1px solid #2d3148;padding:0 24px;display:flex;align-items:center;gap:24px;height:56px}
+  .nav-brand{font-size:18px;font-weight:700;color:#7c3aed;letter-spacing:-0.5px}
+  .nav-tab{padding:8px 16px;border-radius:6px;cursor:pointer;font-size:14px;color:#94a3b8;transition:all .2s;border:none;background:none}
+  .nav-tab.active,.nav-tab:hover{background:#2d3148;color:#e2e8f0}
+  .nav-tab.active{color:#7c3aed}
+  main{flex:1;padding:24px;max-width:1400px;width:100%;margin:0 auto}
+  .page-title{font-size:24px;font-weight:700;margin-bottom:4px}
+  .page-sub{color:#64748b;font-size:14px;margin-bottom:24px}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+  .card{background:#1a1d2e;border:1px solid #2d3148;border-radius:12px;padding:20px}
+  .card-title{font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+  .card-value{font-size:32px;font-weight:700;color:#e2e8f0}
+  .card-sub{font-size:13px;color:#64748b;margin-top:4px}
+  .badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600}
+  .badge-red{background:#450a0a;color:#fca5a5}
+  .badge-yellow{background:#451a03;color:#fcd34d}
+  .badge-green{background:#052e16;color:#86efac}
+  .badge-purple{background:#2e1065;color:#c4b5fd}
+  .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .form-group{display:flex;flex-direction:column;gap:6px}
+  label{font-size:13px;color:#94a3b8;font-weight:500}
+  input,select{background:#0f1117;border:1px solid #2d3148;border-radius:8px;padding:10px 12px;color:#e2e8f0;font-size:14px;width:100%;transition:border .2s}
+  input:focus,select:focus{outline:none;border-color:#7c3aed}
+  select option{background:#1a1d2e}
+  .btn{padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-size:14px;font-weight:600;transition:all .2s}
+  .btn-primary{background:#7c3aed;color:#fff}
+  .btn-primary:hover{background:#6d28d9}
+  .btn-primary:disabled{background:#374151;color:#6b7280;cursor:not-allowed}
+  .btn-secondary{background:#2d3148;color:#e2e8f0}
+  .btn-secondary:hover{background:#374151}
+  .result-card{background:#1a1d2e;border:1px solid #2d3148;border-radius:12px;padding:24px;margin-top:20px}
+  .prob-bar-track{background:#2d3148;border-radius:8px;height:12px;overflow:hidden;margin:8px 0}
+  .prob-bar-fill{height:100%;border-radius:8px;transition:width .6s ease}
+  .shap-item{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #1e2235}
+  .shap-item:last-child{border:none}
+  .shap-feature{width:200px;font-size:13px;color:#94a3b8}
+  .shap-bar-track{flex:1;background:#2d3148;border-radius:4px;height:8px;overflow:hidden}
+  .shap-bar-pos{background:#10b981;height:100%;border-radius:4px}
+  .shap-bar-neg{background:#ef4444;height:100%;border-radius:4px}
+  .shap-value{width:60px;text-align:right;font-size:12px;font-weight:600}
+  .shap-pos{color:#10b981}
+  .shap-neg{color:#ef4444}
+  .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+  .status-ok{background:#10b981}
+  .status-err{background:#ef4444}
+  .table{width:100%;border-collapse:collapse}
+  .table th{text-align:left;padding:10px 14px;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid #2d3148}
+  .table td{padding:12px 14px;font-size:13px;border-bottom:1px solid #1e2235}
+  .table tr:hover td{background:#1e2235}
+  .spinner{width:20px;height:20px;border:2px solid #2d3148;border-top:2px solid #7c3aed;border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .alert{padding:12px 16px;border-radius:8px;font-size:13px;margin-top:12px}
+  .alert-error{background:#450a0a;border:1px solid #7f1d1d;color:#fca5a5}
+  .alert-success{background:#052e16;border:1px solid #14532d;color:#86efac}
+  .section-title{font-size:16px;font-weight:600;margin-bottom:16px;color:#e2e8f0}
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-track{background:#0f1117}
+  ::-webkit-scrollbar-thumb{background:#2d3148;border-radius:3px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState, useEffect, useCallback} = React;
+const {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line} = window.Recharts;
+
+const API = 'http://localhost:8000';
+
+const COLORS = ['#ef4444','#f59e0b','#10b981'];
+
+async function api(path, opts={}) {
+  const r = await fetch(API + path, {headers:{'Content-Type':'application/json'},...opts});
+  if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+  return r.json();
+}
+
+// ── Stat Card ──────────────────────────────────────────────────────────────
+function StatCard({title, value, sub, accent}) {
+  return (
+    <div className="card">
+      <div className="card-title">{title}</div>
+      <div className="card-value" style={accent?{color:accent}:{}}>{value}</div>
+      {sub && <div className="card-sub">{sub}</div>}
+    </div>
+  );
+}
+
+// ── Overview Tab ───────────────────────────────────────────────────────────
+function OverviewTab() {
+  const [data, setData] = useState(null);
+  const [stats, setStats] = useState(null);
+  const [health, setHealth] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    Promise.all([
+      api('/analytics/overview'),
+      api('/predictions/stats'),
+      api('/health'),
+    ]).then(([a, s, h]) => {
+      setData(a.data);
+      setStats(s);
+      setHealth(h);
+      setLoading(false);
+    }).catch(e => { setError(e.message); setLoading(false); });
+  }, []);
+
+  if (loading) return <div style={{padding:40,textAlign:'center'}}><div className="spinner"/></div>;
+  if (error) return <div className="alert alert-error">Failed to load: {error}. Is the API running on port 8000?</div>;
+
+  const satisfactionData = data?.churn_by_satisfaction
+    ? Object.entries(data.churn_by_satisfaction).map(([k,v]) => ({score:`Score ${k}`, rate: +(v*100).toFixed(1)}))
+    : [];
+
+  const riskData = data?.risk_segmentation ? [
+    {name:'High Risk', value: data.risk_segmentation.high_risk},
+    {name:'Medium Risk', value: data.risk_segmentation.medium_risk},
+    {name:'Low Risk', value: data.risk_segmentation.low_risk},
+  ] : [];
+
+  return (
+    <div>
+      <div className="page-title">Platform Overview</div>
+      <div className="page-sub">Real-time analytics from {data?.customer_counts?.total?.toLocaleString()} customers</div>
+
+      {/* KPI row */}
+      <div className="grid-4">
+        <StatCard title="Total Customers" value={data?.customer_counts?.total?.toLocaleString() ?? '—'}
+          sub={`${data?.customer_counts?.active?.toLocaleString()} active`}/>
+        <StatCard title="Churn Rate" value={`${(data?.churn_rate*100).toFixed(1)}%`}
+          sub="Historical churn" accent="#ef4444"/>
+        <StatCard title="Avg Satisfaction" value={data?.avg_satisfaction?.overall?.toFixed(2) ?? '—'}
+          sub="Scale 1–5"/>
+        <StatCard title="API Status"
+          value={<span><span className={`status-dot ${health?.status==='healthy'?'status-ok':'status-err'}`}/>
+            {health?.status ?? '—'}</span>}
+          sub={`Model loaded: ${health?.model_loaded ? 'Yes' : 'No'}`}/>
+      </div>
+
+      {/* Prediction stats */}
+      <div className="grid-4" style={{marginBottom:24}}>
+        <StatCard title="Total Predictions" value={stats?.total_predictions?.toLocaleString() ?? '0'}/>
+        <StatCard title="High Risk" value={stats?.high_risk_count?.toLocaleString() ?? '0'}
+          sub={`${stats?.high_risk_percentage?.toFixed(1)}%`} accent="#ef4444"/>
+        <StatCard title="Medium Risk" value={stats?.medium_risk_count?.toLocaleString() ?? '0'} accent="#f59e0b"/>
+        <StatCard title="Avg Churn Prob" value={`${((stats?.average_churn_probability??0)*100).toFixed(1)}%`}/>
+      </div>
+
+      <div className="grid-2">
+        {/* Churn by satisfaction */}
+        <div className="card">
+          <div className="section-title">Churn Rate by Satisfaction Score</div>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={satisfactionData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#2d3148"/>
+              <XAxis dataKey="score" tick={{fill:'#64748b',fontSize:12}}/>
+              <YAxis tickFormatter={v=>`${v}%`} tick={{fill:'#64748b',fontSize:12}}/>
+              <Tooltip formatter={v=>`${v}%`} contentStyle={{background:'#1a1d2e',border:'1px solid #2d3148',borderRadius:8}}/>
+              <Bar dataKey="rate" fill="#7c3aed" radius={[4,4,0,0]}/>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Risk segmentation */}
+        <div className="card">
+          <div className="section-title">Customer Risk Segmentation</div>
+          <ResponsiveContainer width="100%" height={220}>
+            <PieChart>
+              <Pie data={riskData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({name,percent})=>`${name} ${(percent*100).toFixed(0)}%`} labelLine={false}>
+                {riskData.map((_,i)=><Cell key={i} fill={COLORS[i]}/>)}
+              </Pie>
+              <Tooltip contentStyle={{background:'#1a1d2e',border:'1px solid #2d3148',borderRadius:8}}/>
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Predict Tab ────────────────────────────────────────────────────────────
+const DEFAULT_FORM = {
+  tenure:12, warehouse_to_home:15, number_of_device_registered:3,
+  preferred_order_cat:'Mobile Phone', satisfaction_score:3,
+  marital_status:'Single', number_of_address:2, complain:0,
+  days_since_last_order:5, cashback_amount:175
+};
+
+function PredictTab() {
+  const [form, setForm] = useState(DEFAULT_FORM);
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handle = (k,v) => setForm(f=>({...f,[k]:isNaN(v)||v===''?v:Number(v)}));
+
+  const predict = async () => {
+    setLoading(true); setError(null); setResult(null);
+    try {
+      const r = await api('/explain', {method:'POST', body:JSON.stringify({customer:form})});
+      setResult(r);
+    } catch(e) { setError(e.message); }
+    finally { setLoading(false); }
+  };
+
+  const riskColor = r => r==='HIGH'?'#ef4444':r==='MEDIUM'?'#f59e0b':'#10b981';
+  const barColor  = p => p>=0.7?'#ef4444':p>=0.4?'#f59e0b':'#10b981';
+  const maxShap   = result ? Math.max(...result.explanation.top_5_drivers.map(d=>Math.abs(d.shap_value)),0.01) : 1;
+
+  return (
+    <div>
+      <div className="page-title">Churn Prediction & Explanation</div>
+      <div className="page-sub">Enter customer features to get churn probability and SHAP-based explanation</div>
+
+      <div className="card">
+        <div className="section-title">Customer Features</div>
+        <div className="form-grid">
+          <div className="form-group">
+            <label>Tenure (months)</label>
+            <input type="number" min="0" max="120" value={form.tenure} onChange={e=>handle('tenure',e.target.value)}/>
+          </div>
+          <div className="form-group">
+            <label>Warehouse to Home (km)</label>
+            <input type="number" min="0" value={form.warehouse_to_home} onChange={e=>handle('warehouse_to_home',e.target.value)}/>
+          </div>
+          <div className="form-group">
+            <label>Devices Registered</label>
+            <input type="number" min="1" max="10" value={form.number_of_device_registered} onChange={e=>handle('number_of_device_registered',e.target.value)}/>
+          </div>
+          <div className="form-group">
+            <label>Preferred Order Category</label>
+            <select value={form.preferred_order_cat} onChange={e=>handle('preferred_order_cat',e.target.value)}>
+              {['Laptop & Accessory','Mobile Phone','Mobile','Fashion','Grocery','Others'].map(o=><option key={o}>{o}</option>)}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Satisfaction Score (1–5)</label>
+            <input type="number" min="1" max="5" value={form.satisfaction_score} onChange={e=>handle('satisfaction_score',e.target.value)}/>
+          </div>
+          <div className="form-group">
+            <label>Marital Status</label>
+            <select value={form.marital_status} onChange={e=>handle('marital_status',e.target.value)}>
+              {['Single','Married','Divorced'].map(o=><option key={o}>{o}</option>)}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Number of Addresses</label>
+            <input type="number" min="1" value={form.number_of_address} onChange={e=>handle('number_of_address',e.target.value)}/>
+          </div>
+          <div className="form-group">
+            <label>Complained</label>
+            <select value={form.complain} onChange={e=>handle('complain',Number(e.target.value))}>
+              <option value={0}>No</option>
+              <option value={1}>Yes</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Days Since Last Order</label>
+            <input type="number" min="0" value={form.days_since_last_order} onChange={e=>handle('days_since_last_order',e.target.value)}/>
+          </div>
+          <div className="form-group">
+            <label>Cashback Amount (₹)</label>
+            <input type="number" min="0" value={form.cashback_amount} onChange={e=>handle('cashback_amount',e.target.value)}/>
+          </div>
+        </div>
+        <div style={{marginTop:20,display:'flex',gap:12}}>
+          <button className="btn btn-primary" onClick={predict} disabled={loading}>
+            {loading ? <><span className="spinner" style={{width:14,height:14,marginRight:8}}/>Predicting...</> : 'Predict & Explain'}
+          </button>
+          <button className="btn btn-secondary" onClick={()=>{setForm(DEFAULT_FORM);setResult(null);setError(null)}}>Reset</button>
+        </div>
+        {error && <div className="alert alert-error">{error}</div>}
+      </div>
+
+      {result && (
+        <div className="result-card">
+          <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:20}}>
+            <div>
+              <div style={{fontSize:13,color:'#64748b',marginBottom:4}}>Churn Probability</div>
+              <div style={{fontSize:40,fontWeight:700,color:barColor(result.churn_probability)}}>
+                {(result.churn_probability*100).toFixed(1)}%
+              </div>
+            </div>
+            <div>
+              <div style={{fontSize:13,color:'#64748b',marginBottom:4}}>Risk Level</div>
+              <span className="badge" style={{fontSize:16,padding:'4px 16px',background:riskColor(result.risk_level)+'22',color:riskColor(result.risk_level)}}>
+                {result.risk_level}
+              </span>
+            </div>
+          </div>
+
+          <div className="prob-bar-track">
+            <div className="prob-bar-fill" style={{width:`${result.churn_probability*100}%`,background:barColor(result.churn_probability)}}/>
+          </div>
+
+          <div style={{fontSize:13,color:'#94a3b8',marginBottom:20,marginTop:8,padding:'10px 14px',background:'#0f1117',borderRadius:8}}>
+            💡 {result.recommendation}
+          </div>
+
+          <div className="section-title">Top 5 SHAP Drivers</div>
+          <div style={{fontSize:12,color:'#64748b',marginBottom:12}}>
+            Green = reduces churn risk &nbsp;|&nbsp; Red = increases churn risk
+          </div>
+          {result.explanation.top_5_drivers.map((d,i)=>(
+            <div key={i} className="shap-item">
+              <div className="shap-feature">{d.feature}</div>
+              <div className="shap-bar-track">
+                {d.shap_value >= 0
+                  ? <div className="shap-bar-pos" style={{width:`${Math.abs(d.shap_value)/maxShap*100}%`}}/>
+                  : <div className="shap-bar-neg" style={{width:`${Math.abs(d.shap_value)/maxShap*100}%`}}/>
+                }
+              </div>
+              <div className={`shap-value ${d.shap_value>=0?'shap-pos':'shap-neg'}`}>
+                {d.shap_value>=0?'+':''}{d.shap_value.toFixed(3)}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── History Tab ────────────────────────────────────────────────────────────
+function HistoryTab() {
+  const [preds, setPreds] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState(false);
+  const [days, setDays] = useState(7);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    api(`/predictions?days=${days}&high_risk_only=${filter}&limit=50`)
+      .then(r => { setPreds(r.predictions ?? []); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [days, filter]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const riskBadge = r => {
+    const cls = r==='HIGH'?'badge-red':r==='MEDIUM'?'badge-yellow':'badge-green';
+    return <span className={`badge ${cls}`}>{r}</span>;
+  };
+
+  return (
+    <div>
+      <div className="page-title">Prediction History</div>
+      <div className="page-sub">Recent predictions and audit trail</div>
+
+      <div className="card" style={{marginBottom:16}}>
+        <div style={{display:'flex',gap:16,alignItems:'center',flexWrap:'wrap'}}>
+          <div className="form-group" style={{flexDirection:'row',alignItems:'center',gap:8}}>
+            <label>Last</label>
+            <select value={days} onChange={e=>setDays(Number(e.target.value))} style={{width:80}}>
+              {[1,7,14,30].map(d=><option key={d} value={d}>{d}d</option>)}
+            </select>
+            <label>days</label>
+          </div>
+          <label style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer'}}>
+            <input type="checkbox" checked={filter} onChange={e=>setFilter(e.target.checked)}/>
+            High risk only
+          </label>
+          <button className="btn btn-secondary" onClick={load}>Refresh</button>
+        </div>
+      </div>
+
+      <div className="card">
+        {loading
+          ? <div style={{textAlign:'center',padding:32}}><div className="spinner"/></div>
+          : preds.length === 0
+            ? <div style={{color:'#64748b',textAlign:'center',padding:32}}>No predictions found</div>
+            : <table className="table">
+                <thead>
+                  <tr>
+                    <th>ID</th><th>Risk</th><th>Probability</th><th>Tenure</th>
+                    <th>Satisfaction</th><th>Complained</th><th>Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {preds.map(p=>(
+                    <tr key={p.id}>
+                      <td style={{color:'#64748b'}}>#{p.id}</td>
+                      <td>{riskBadge(p.churn_risk_level)}</td>
+                      <td style={{fontWeight:600,color:p.churn_probability>=0.7?'#ef4444':p.churn_probability>=0.4?'#f59e0b':'#10b981'}}>
+                        {(p.churn_probability*100).toFixed(1)}%
+                      </td>
+                      <td>{p.tenure}m</td>
+                      <td>{p.satisfaction_score}/5</td>
+                      <td>{p.complain?<span className="badge badge-red">Yes</span>:<span className="badge badge-green">No</span>}</td>
+                      <td style={{color:'#64748b',fontSize:12}}>{new Date(p.created_at).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+        }
+      </div>
+    </div>
+  );
+}
+
+// ── Analytics Tab ──────────────────────────────────────────────────────────
+function AnalyticsTab() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api('/analytics/overview')
+      .then(r => { setData(r.data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div style={{padding:40,textAlign:'center'}}><div className="spinner"/></div>;
+  if (!data)   return <div className="alert alert-error">Failed to load analytics</div>;
+
+  const tenureData = data.churn_by_tenure
+    ? Object.entries(data.churn_by_tenure).map(([k,v])=>({segment:k.split(' ')[0], rate:+(v*100).toFixed(1)}))
+    : [];
+
+  const complaintData = [
+    {name:'No Complaint', rate: +(data.churn_by_complaint?.['0']?.churn_rate*100).toFixed(1)},
+    {name:'Complained',   rate: +(data.churn_by_complaint?.['1']?.churn_rate*100).toFixed(1)},
+  ];
+
+  return (
+    <div>
+      <div className="page-title">Churn Analytics</div>
+      <div className="page-sub">Business intelligence and churn driver analysis</div>
+
+      <div className="grid-3" style={{marginBottom:24}}>
+        <StatCard title="Avg Tenure (Active)" value={`${data.avg_tenure?.active?.toFixed(1)}m`} sub="months"/>
+        <StatCard title="Avg Tenure (Churned)" value={`${data.avg_tenure?.churned?.toFixed(1)}m`} sub="months" accent="#ef4444"/>
+        <StatCard title="Satisfaction (Churned)" value={data.avg_satisfaction?.churned?.toFixed(2)} sub="avg score" accent="#f59e0b"/>
+      </div>
+
+      <div className="grid-2">
+        <div className="card">
+          <div className="section-title">Churn by Tenure Segment</div>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={tenureData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#2d3148"/>
+              <XAxis dataKey="segment" tick={{fill:'#64748b',fontSize:12}}/>
+              <YAxis tickFormatter={v=>`${v}%`} tick={{fill:'#64748b',fontSize:12}}/>
+              <Tooltip formatter={v=>`${v}%`} contentStyle={{background:'#1a1d2e',border:'1px solid #2d3148',borderRadius:8}}/>
+              <Bar dataKey="rate" fill="#f59e0b" radius={[4,4,0,0]}/>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="card">
+          <div className="section-title">Churn Rate: Complaint Impact</div>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={complaintData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#2d3148"/>
+              <XAxis dataKey="name" tick={{fill:'#64748b',fontSize:12}}/>
+              <YAxis tickFormatter={v=>`${v}%`} tick={{fill:'#64748b',fontSize:12}}/>
+              <Tooltip formatter={v=>`${v}%`} contentStyle={{background:'#1a1d2e',border:'1px solid #2d3148',borderRadius:8}}/>
+              <Bar dataKey="rate" radius={[4,4,0,0]}>
+                <Cell fill="#10b981"/>
+                <Cell fill="#ef4444"/>
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          <div style={{fontSize:12,color:'#64748b',marginTop:8,textAlign:'center'}}>
+            Complaint multiplier: {data.churn_by_complaint?.['1']?.churn_rate && data.churn_by_complaint?.['0']?.churn_rate
+              ? `${(data.churn_by_complaint['1'].churn_rate/data.churn_by_complaint['0'].churn_rate).toFixed(1)}x`
+              : '—'}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── App Shell ──────────────────────────────────────────────────────────────
+const TABS = [
+  {id:'overview',  label:'Overview'},
+  {id:'predict',   label:'Predict & Explain'},
+  {id:'history',   label:'History'},
+  {id:'analytics', label:'Analytics'},
+];
+
+function App() {
+  const [tab, setTab] = useState('overview');
+  return (
+    <div className="app">
+      <nav>
+        <div className="nav-brand">⚡ Churn Intelligence</div>
+        {TABS.map(t=>(
+          <button key={t.id} className={`nav-tab ${tab===t.id?'active':''}`} onClick={()=>setTab(t.id)}>
+            {t.label}
+          </button>
+        ))}
+        <div style={{marginLeft:'auto',fontSize:12,color:'#475569'}}>API: localhost:8000</div>
+      </nav>
+      <main>
+        {tab==='overview'  && <OverviewTab/>}
+        {tab==='predict'   && <PredictTab/>}
+        {tab==='history'   && <HistoryTab/>}
+        {tab==='analytics' && <AnalyticsTab/>}
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
