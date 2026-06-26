@@ -1,1 +1,15 @@
- 
+venv/ 
+__pycache__/ 
+*.pyc 
+mlflow.db 
+predictions.db 
+data/batch_scores.duckdb 
+data/validation_reports/ 
+data/drift_reports/ 
+data/batch_reports/ 
+models/churn_model.pkl 
+models/shap_explainer.pkl 
+.env 
+htmlcov/ 
+.pytest_cache/ 
+*.egg-info/ 
