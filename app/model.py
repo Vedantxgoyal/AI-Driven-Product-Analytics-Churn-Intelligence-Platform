@@ -4,6 +4,7 @@ app/model.py - XGBoost + SHAP model wrapper
 
 import xgboost as xgb
 import pathlib
+import pickle
 import logging
 from typing import Tuple, List, Dict
 
