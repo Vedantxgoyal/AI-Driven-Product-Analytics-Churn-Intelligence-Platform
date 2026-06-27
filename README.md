@@ -7,7 +7,7 @@
 ![XGBoost](https://img.shields.io/badge/XGBoost-2.0-orange)
 ![Tests](https://img.shields.io/badge/Tests-61%20passing-brightgreen)
 ![License](https://img.shields.io/badge/License-MIT-purple)
-
+![CI](https://github.com/Vedantxgoyal/AI-Driven-Product-Analytics-Churn-Intelligence-Platform/actions/workflows/Ci.yml/badge.svg)
 ---
 
 ## Overview
